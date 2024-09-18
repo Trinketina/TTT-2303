@@ -139,36 +139,10 @@ public class TTT : MonoBehaviour
         Vector2Int bestMove = new();
         int bestSum = 0;
 
-        //edge case for unoptimal O placement
-        if (turn == 2 && (lastXPosition.x + lastXPosition.y) % 2 == 0 && (lastOPosition.x + lastOPosition.y) % 2 == 0)
+        //edge case for bottom corner X placement
+        if (turn == 2 && cells[2, 2].current == PlayerOption.X && cells[1, 1].current == PlayerOption.O)
         {
-            Debug.Log(true);
-            int sum = CalculateStraightValues(0, 0);
-            if (sum > bestSum)
-            {
-                bestSum = sum;
-                bestMove = new(0, 0);
-            }
-            sum = CalculateStraightValues(2, 0);
-            if (sum > bestSum)
-            {
-                bestSum = sum;
-                bestMove = new(2, 0);
-            }
-            sum = CalculateStraightValues(0, 2);
-            if (sum > bestSum)
-            {
-                bestSum = sum;
-                bestMove = new(0, 2);
-            }
-            sum = CalculateStraightValues(2, 2);
-            if (sum > bestSum)
-            {
-                bestSum = sum;
-                bestMove = new(2, 2);
-            }
-
-            ChooseSpace(bestMove.x, bestMove.y);
+            ChooseSpace(0, 2);
             return;
         }
         //Check if ai can win immediately
@@ -191,8 +165,8 @@ public class TTT : MonoBehaviour
             counterPlayer = PlayerOption.X;
         else
             counterPlayer = PlayerOption.O;
-        // Check if ai can block a win
 
+        // Check if ai can block a win
         for (int i = 0; i < Rows * Columns; i++)
         {
             Vector2Int move = GetPosition(i);
@@ -291,118 +265,6 @@ public class TTT : MonoBehaviour
         return canWin;
     }
 
-
-    public int CalculateStraightValues(int col, int row)
-    {
-        if (cells[col, row].current != PlayerOption.NONE)
-            return 0;
-
-        PlayerOption counterPlayer;
-        if (currentPlayer == PlayerOption.X)
-            counterPlayer = PlayerOption.O;
-        else
-            counterPlayer = PlayerOption.X;
-
-        // sum each row/column based on what's in each cell X = 1, O = -1, blank = 0
-        // we have a winner if the sum = 3 (X) or -3 (O)
-        int sum = 0;
-        int bestSum = 0;
-
-        // check rows
-        for (int i = 0; i < Rows; i++)
-        {
-            sum = 0;
-            for (int j = 0; j < Columns; j++)
-            {
-                var value = 0;
-                if (cells[j, i].current == currentPlayer)
-                    value = 1;
-                else if (cells[j, i].current == counterPlayer)
-                    value = -1;
-
-                sum += value;
-            }
-
-            if (sum > bestSum)
-                bestSum = sum;
-
-        }
-
-        // check columns
-        for (int j = 0; j < Columns; j++)
-        {
-            //sum = 0;
-            for (int i = 0; i < Rows; i++)
-            {
-                var value = 0;
-                if (cells[j, i].current == currentPlayer)
-                    value = 1;
-                else if (cells[j, i].current == counterPlayer)
-                    value = -1;
-
-                sum += value;
-            }
-
-            if (sum > bestSum)
-                bestSum = sum;
-
-        }
-
-        return bestSum;
-    }
-
-    public int CalculateDiagonalValues(int col, int row)
-    {
-        if (cells[col, row].current != PlayerOption.NONE)
-            return 0;
-
-        PlayerOption counterPlayer;
-        if (currentPlayer == PlayerOption.X)
-            counterPlayer = PlayerOption.O;
-        else
-            counterPlayer = PlayerOption.X;
-
-        // sum each row/column based on what's in each cell X = 1, O = -1, blank = 0
-        // we have a winner if the sum = 3 (X) or -3 (O)
-        int sum = 0;
-        int bestSum = 0;
-
-        // check diagonals
-        // top left to bottom right
-        sum = 0;
-        for (int i = 0; i < Rows; i++)
-        {
-            int value = 0;
-            if (cells[i, i].current == currentPlayer)
-                value = 1;
-            else if (cells[i, i].current == counterPlayer)
-                value = -1;
-
-            sum += value;
-        }
-
-        if (sum > bestSum)
-            bestSum = sum;
-
-        // top right to bottom left
-        sum = 0;
-        for (int i = 0; i < Rows; i++)
-        {
-            int value = 0;
-
-            if (cells[Columns - 1 - i, i].current == currentPlayer)
-                value = 1;
-            else if (cells[Columns - 1 - i, i].current == counterPlayer)
-                value = -1;
-
-            sum += value;
-        }
-
-        if (sum > bestSum)
-            bestSum = sum;
-
-        return bestSum;
-    }
     public int CalculateMoveValue(int col, int row)
     {
         if (cells[col, row].current != PlayerOption.NONE)
